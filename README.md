@@ -47,7 +47,7 @@ macOS VST3s. Open the repo on GitHub → **Actions** → the latest **Build** ru
 download **SpectraShell-Windows-VST3**.
 
 ### Build it yourself
-You need CMake ≥ 3.22, Git, and a C++17 compiler (Visual Studio 2022 on Windows,
+You need CMake ≥ 3.22, Git, and a C++17 compiler (Visual Studio 2022 or newer on Windows,
 Xcode on macOS). JUCE is downloaded automatically.
 
 ```bash
