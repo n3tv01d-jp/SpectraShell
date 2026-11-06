@@ -70,6 +70,13 @@ the wrapper settings (gear icon → *Processing*) and set *Input port* to the sa
 number. Notes you play or sequence on the MIDI Out channel now set which notes
 resonate.
 
+### Linux (Wine / Proton / Lutris)
+
+Use the Windows VST3 and install it into the Wine prefix's
+`drive_c/Program Files/Common Files/VST3/`. The editor uses JUCE's software
+renderer rather than Direct2D, which Wine doesn't fully support, so the UI
+draws correctly inside FL Studio under Wine.
+
 ## Tests
 
 The DSP engine (`Source/ResonatorEngine.h`) does not depend on JUCE. Its tests cover
