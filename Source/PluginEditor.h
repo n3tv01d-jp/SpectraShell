@@ -41,7 +41,6 @@ public:
 
     void paint (juce::Graphics&) override;
     void resized() override;
-    void parentHierarchyChanged() override;
 
 private:
     struct Knob
@@ -62,7 +61,6 @@ private:
     void addKnob (Knob&, const juce::String& paramId, const juce::String& name);
     void addChoice (Choice&, const juce::String& name);
     void applyNoteSet();
-    void useSoftwareRenderer();
 
     SpectraShellProcessor& proc;
     ShellLookAndFeel lnf;

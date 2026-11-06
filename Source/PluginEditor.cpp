@@ -301,35 +301,9 @@ void SpectraShellEditor::applyNoteSet()
     keyboard.refresh();
 }
 
-// JUCE 8 draws plugin windows on Windows with Direct2D by default. Wine and Proton
-// (e.g. FL Studio under Lutris) don't support enough of Direct2D, so the window stays
-// blank. JUCE's software (GDI) renderer works everywhere, and this UI is light enough
-// that it costs nothing noticeable on real Windows either.
-void SpectraShellEditor::useSoftwareRenderer()
-{
-   #if JUCE_WINDOWS
-    if (auto* peer = getPeer())
-    {
-        const int software = peer->getAvailableRenderingEngines().indexOf ("Software Renderer");
-        if (software >= 0 && peer->getCurrentRenderingEngine() != software)
-        {
-            peer->setCurrentRenderingEngine (software);
-            repaint();
-        }
-    }
-   #endif
-}
-
-void SpectraShellEditor::parentHierarchyChanged()
-{
-    // Called when the host window (the peer) is created or swapped.
-    useSoftwareRenderer();
-}
-
+// Under Wine the window uses JUCE's software renderer (see cmake/PatchJuceWine.cmake).
 void SpectraShellEditor::timerCallback()
 {
-    useSoftwareRenderer();   // catches a peer created after parentHierarchyChanged ran
-
     keyboard.refresh();
     voicesLabel.setText (juce::String (proc.getActiveVoiceCount()) + " voices", juce::dontSendNotification);
 
