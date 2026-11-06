@@ -4,12 +4,20 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 #include "PluginProcessor.h"
 
+// Shared by every SpectraShell editor in the process (via SharedResourcePointer), and
+// installed as JUCE's default LookAndFeel while an editor is open. JUCE 8 resolves every
+// font through the *default* LookAndFeel, so this is what makes all text - including combo
+// box popups and slider text boxes - use the embedded fonts instead of system fonts.
 class ShellLookAndFeel : public juce::LookAndFeel_V4
 {
 public:
     ShellLookAndFeel();
     void drawRotarySlider (juce::Graphics&, int x, int y, int w, int h, float pos,
                            float startAngle, float endAngle, juce::Slider&) override;
+    juce::Typeface::Ptr getTypefaceForFont (const juce::Font&) override;
+
+private:
+    juce::Typeface::Ptr regular, bold;
 };
 
 // One-octave keyboard: click a key to toggle that pitch class.
@@ -63,7 +71,7 @@ private:
     void applyNoteSet();
 
     SpectraShellProcessor& proc;
-    ShellLookAndFeel lnf;
+    juce::SharedResourcePointer<ShellLookAndFeel> lnf;   // declared before the components that use it
     NoteKeyboard keyboard;
 
     Choice root, noteSet, source, harmonics;

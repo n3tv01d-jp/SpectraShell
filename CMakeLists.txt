@@ -45,6 +45,14 @@ juce_add_plugin(SpectraShell
     COPY_PLUGIN_AFTER_BUILD     FALSE
     VST3_CATEGORIES             Fx Filter)
 
+# Fonts embedded in the plugin, so text never depends on what's installed. Under Wine JUCE
+# asks for "Bitstream Vera Sans", which most prefixes don't have; text then fails to render.
+juce_add_binary_data(SpectraShellFonts
+    SOURCES
+        Resources/Fonts/DejaVuSans.ttf
+        Resources/Fonts/DejaVuSansBold.ttf)
+set_target_properties(SpectraShellFonts PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+
 target_sources(SpectraShell PRIVATE
     Source/PluginProcessor.cpp
     Source/PluginEditor.cpp)
@@ -56,6 +64,7 @@ target_compile_definitions(SpectraShell PUBLIC
 
 target_link_libraries(SpectraShell
     PRIVATE
+        SpectraShellFonts
         juce::juce_audio_utils
     PUBLIC
         juce::juce_recommended_config_flags

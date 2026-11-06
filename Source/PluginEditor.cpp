@@ -1,4 +1,5 @@
 #include "PluginEditor.h"
+#include "BinaryData.h"
 
 namespace
 {
@@ -12,6 +13,8 @@ namespace
         const juce::Colour accent   { 0xff5ee6d0 };   // teal
         const juce::Colour accent2  { 0xffb48cff };   // violet
     }
+
+    int openEditors = 0;   // message thread only
 
     const char* const kNoteNames[12] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
@@ -58,6 +61,20 @@ ShellLookAndFeel::ShellLookAndFeel()
     setColour (juce::PopupMenu::textColourId, Colours::text);
     setColour (juce::PopupMenu::highlightedBackgroundColourId, Colours::accent.withAlpha (0.25f));
     setColour (juce::PopupMenu::highlightedTextColourId, Colours::text);
+
+    regular = juce::Typeface::createSystemTypefaceFor (BinaryData::DejaVuSans_ttf,
+                                                       (size_t) BinaryData::DejaVuSans_ttfSize);
+    bold    = juce::Typeface::createSystemTypefaceFor (BinaryData::DejaVuSansBold_ttf,
+                                                       (size_t) BinaryData::DejaVuSansBold_ttfSize);
+}
+
+juce::Typeface::Ptr ShellLookAndFeel::getTypefaceForFont (const juce::Font& font)
+{
+    // The UI only uses the default font family, so every request maps to the embedded fonts.
+    if (auto tf = font.isBold() ? bold : regular)
+        return tf;
+
+    return LookAndFeel_V4::getTypefaceForFont (font);   // embedded font failed to load
 }
 
 void ShellLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int w, int h, float pos,
@@ -204,7 +221,12 @@ void NoteKeyboard::refresh()
 SpectraShellEditor::SpectraShellEditor (SpectraShellProcessor& p)
     : AudioProcessorEditor (&p), proc (p), keyboard (p)
 {
-    setLookAndFeel (&lnf);
+    // Font lookups go through the default LookAndFeel (see ShellLookAndFeel). Fonts resolved
+    // before this point may be cached with the system typeface, so clear that cache.
+    ++openEditors;
+    juce::LookAndFeel::setDefaultLookAndFeel (&lnf.get());
+    juce::Typeface::clearTypefaceCache();
+    setLookAndFeel (&lnf.get());
     addAndMakeVisible (keyboard);
 
     addChoice (root, "Root");
@@ -251,6 +273,13 @@ SpectraShellEditor::~SpectraShellEditor()
 {
     stopTimer();
     setLookAndFeel (nullptr);
+
+    // Last open editor: hand the default LookAndFeel back to JUCE before ours is destroyed.
+    if (--openEditors == 0 && &juce::LookAndFeel::getDefaultLookAndFeel() == &lnf.get())
+    {
+        juce::LookAndFeel::setDefaultLookAndFeel (nullptr);
+        juce::Typeface::clearTypefaceCache();
+    }
 }
 
 void SpectraShellEditor::addKnob (Knob& k, const juce::String& paramId, const juce::String& name)
@@ -320,14 +349,16 @@ void SpectraShellEditor::paint (juce::Graphics& g)
     g.fillAll (Colours::bg);
 
     auto header = getLocalBounds().removeFromTop (48).toFloat();
-    g.setFont (juce::FontOptions (24.0f, juce::Font::bold));
+    const juce::Font titleFont (juce::FontOptions (24.0f, juce::Font::bold));
+    const float titleWidth = juce::GlyphArrangement::getStringWidth (titleFont, "SpectraShell");
+    g.setFont (titleFont);
     g.setGradientFill (juce::ColourGradient (Colours::accent, header.getX() + 20.0f, 0.0f,
-                                             Colours::accent2, header.getX() + 200.0f, 0.0f, false));
+                                             Colours::accent2, header.getX() + 20.0f + titleWidth, 0.0f, false));
     g.drawText ("SpectraShell", header.reduced (20.0f, 0.0f), juce::Justification::centredLeft);
 
     g.setColour (Colours::dim);
     g.setFont (juce::FontOptions (12.0f));
-    g.drawText ("harmonic resonator", header.reduced (20.0f, 0.0f).withTrimmedLeft (160.0f),
+    g.drawText ("harmonic resonator", header.reduced (20.0f, 0.0f).withTrimmedLeft (titleWidth + 12.0f),
                 juce::Justification::centredLeft);
 
     // Knob panel

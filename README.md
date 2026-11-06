@@ -73,10 +73,18 @@ resonate.
 ### Linux (Wine / Proton / Lutris)
 
 Use the Windows VST3 and install it into the Wine prefix's
-`drive_c/Program Files/Common Files/VST3/`. Under Wine the plugin window is
-created with JUCE's software renderer instead of Direct2D, which Wine can't
-display (the window would stay black). Real Windows still uses Direct2D. The
-build applies this to JUCE automatically (`cmake/PatchJuceWine.cmake`).
+`drive_c/Program Files/Common Files/VST3/`. The build includes these Wine fixes:
+
+- The plugin window uses JUCE's software renderer instead of Direct2D, which
+  Wine can't display (the window would stay black). Real Windows still uses
+  Direct2D.
+- The UI uses its own embedded font (DejaVu Sans, `Resources/Fonts/`). Under
+  Wine, JUCE 8 otherwise asks for "Bitstream Vera Sans", which most prefixes
+  don't have, so no text renders.
+- A JUCE 8.0.4 bug that crashed the host when text couldn't be shaped
+  (access violation reading `FFFFFFFFFFFFFFE9`) is patched.
+
+The JUCE patches are applied automatically (`cmake/PatchJuceWine.cmake`).
 
 ## Tests
 
