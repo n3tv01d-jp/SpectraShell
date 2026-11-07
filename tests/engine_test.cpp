@@ -1,3 +1,9 @@
+// Copyright (C) 2026 Spectra
+//
+// This file is part of SpectraShell. It is licensed under the GNU Affero
+// General Public License, version 3 (AGPLv3). See the LICENSE file in the
+// project root for the full license text.
+
 // Standalone checks for the resonator engine: tuning accuracy, stability,
 // output levels and CPU cost. Build with -DSPECTRASHELL_BUILD_TESTS=ON
 // -DSPECTRASHELL_PLUGIN=OFF.

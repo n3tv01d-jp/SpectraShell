@@ -96,6 +96,13 @@ cmake -S . -B build-test -DSPECTRASHELL_PLUGIN=OFF -DSPECTRASHELL_BUILD_TESTS=ON
 cmake --build build-test && ./build-test/engine_test
 ```
 
+## License
+
+Copyright (C) 2026 Spectra
+
+SpectraShell is licensed under the GNU Affero General Public License, version 3
+(AGPLv3). See [LICENSE](LICENSE) for the full text.
+
 ## License note
 
 SpectraShell is built on [JUCE](https://juce.com) 8. JUCE is free for personal use

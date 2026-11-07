@@ -1,3 +1,9 @@
+# Copyright (C) 2026 Spectra
+#
+# This file is part of SpectraShell. It is licensed under the GNU Affero
+# General Public License, version 3 (AGPLv3). See the LICENSE file in the
+# project root for the full license text.
+
 cmake_minimum_required(VERSION 3.22)
 
 # Static MSVC runtime: the .vst3 works in FL Studio without needing a VC++ redistributable.

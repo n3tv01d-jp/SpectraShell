@@ -1,3 +1,9 @@
+# Copyright (C) 2026 Spectra
+#
+# This file is part of SpectraShell. It is licensed under the GNU Affero
+# General Public License, version 3 (AGPLv3). See the LICENSE file in the
+# project root for the full license text.
+
 # Applied to JUCE by FetchContent's PATCH_COMMAND (run with -DJUCE_DIR=<juce source dir>).
 # Each patch is skipped if its marker is already present, so the script is safe to re-run.
 
